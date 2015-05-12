@@ -1,0 +1,59 @@
+<html>
+<head>
+  <style>
+    body{
+      padding: 0;
+      margin: 0;
+    }
+
+    .canvas-wrap{
+      margin: 100px;
+      display: inline-block;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    canvas{
+      position: absolute;
+      top: 0;
+      left: 0;
+      border: 1px solid red;
+    }
+
+    img{
+      max-width: 100%;
+      vertical-align: bottom;
+    }
+
+    .dropmarker-anchor{
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin: -5px 0 0 -5px;
+      background: rgba(255, 255, 255, 0.75);
+      border: 2px solid rgba(0, 0, 0, 0.75);
+      border-radius: 50%;
+      cursor: move;
+      position: absolute;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas-wrap">
+    <img src="http://www.dropmark.com/assets/dropmark-creatives.jpg" />
+  </div>
+
+  <script>
+    var wrap = document.querySelector('.canvas-wrap');
+    var dp = null;
+    window.addEventListener('load', function(){
+      dp = new Dropmarker(wrap);
+    });
+  </script>
+  <script src="src/two.js"></script>
+  <script src="src/hammer.js"></script>
+  <script src="src/dropmarker-anchor.js"></script>
+  <script src="src/dropmarker-arrow.js"></script>
+  <script src="src/dropmarker.js"></script>
+</body>
+</html>
