@@ -2,8 +2,7 @@
 
 var Dropmarker = function(container){
   this.container = container;
-  this.pending = {};
-  this.renderer = new DropmarkerArrow(this);
+  this.renderer = new DropmarkerArrowRenderer(this);
   this.cache = {
     width: this.container.offsetWidth,
     height: this.container.offsetHeight
@@ -66,21 +65,10 @@ Dropmarker.prototype.pan = function(e){
   var x = e.center.x - self.container.offsetLeft;
   var y = e.center.y - self.container.offsetTop;
 
-  if(self.pending.item){
-    // Remove previous item from scene
-    self.two.remove(self.pending.item);
-  }
-
-  if(!self.pending.start){
-    // Save reference to our starting point
-    self.pending.start = { x: x, y: y };
-  }
-
   self.renderer.render(x, y);
 
   if(e.isFinal){
     self.renderer.finalize();
-    self.pending = {};
   }
 };
 
