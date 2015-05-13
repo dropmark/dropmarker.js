@@ -7,12 +7,12 @@ var DropmarkerArrowRenderer = function(dropmarker){
   this.arrow = null;
 };
 
-DropmarkerArrowRenderer.prototype.render = function(x, y){
+DropmarkerArrowRenderer.prototype.render = function(pos){
   if(!this.arrow){
     this.arrow = new DropmarkerArrow(this.DR);
   }
 
-  this.arrow.create(x, y);
+  this.arrow.create(pos);
 };
 
 DropmarkerArrowRenderer.prototype.finalize = function(){
