@@ -48,7 +48,11 @@ Dropmarker.prototype.activateListeners = function(){
 Dropmarker.prototype.bindPanListener = function(element, callback){
   var listener = new Hammer(element, {
     recognizers: [
-      [Hammer.Pan,{ direction: Hammer.DIRECTION_ALL }]
+      [Hammer.Pan, {
+          direction: Hammer.DIRECTION_ALL,
+          threshold: 3
+        }
+      ]
     ]
   });
 
