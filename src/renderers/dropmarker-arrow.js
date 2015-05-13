@@ -3,13 +3,19 @@
 // -------------------------- ArrowRenderer -------------------------- //
 
 var DropmarkerArrowRenderer = function(dropmarker){
-  this.DR = dropmarker;
-  this.arrow = null;
+  var self = this;
+  self.DR = dropmarker;
+  self.arrow = null;
+  self.tool = new paper.Tool();
+
+  self.tool.onMouseDrag = function(event) {
+    self.render(point);
+  }
 };
 
-DropmarkerArrowRenderer.prototype.render = function(x, y){
+DropmarkerArrowRenderer.prototype.render = function(event){
   if(!this.arrow){
-    this.arrow = new DropmarkerArrow(this.DR);
+    this.arrow = new DropmarkerArrow(event.point);
   }
 
   this.arrow.create(x, y);

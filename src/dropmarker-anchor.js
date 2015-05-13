@@ -22,7 +22,7 @@ DropmarkerAnchor.prototype.create = function(){
 
 DropmarkerAnchor.prototype.activateEvents = function(){
   var self = this;
-  self.DR.bindPanListener(self.element, function(e){
+  self.DR.bindDragListener(self.element, function(e){
     var x = e.center.x - self.DR.container.offsetLeft;
     var y = e.center.y - self.DR.container.offsetTop;
     self.pan(x, y);

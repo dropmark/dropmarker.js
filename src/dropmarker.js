@@ -15,12 +15,13 @@ var Dropmarker = function(container){
 
 Dropmarker.prototype.create = function(){
   // Create canvas
-  var params = {
-    type: Two.Types.canvas,
-    width: this.cache.width,
-    height: this.cache.height
-  };
-  this.two = new Two(params).appendTo(this.container);
+  this.canvas = document.createElement('canvas');
+  this.canvas.style.width = this.cache.width + 'px';
+  this.canvas.style.height = this.cache.height + 'px';
+  this.container.appendChild(this.canvas);
+
+  // Create a Paper project
+  paper.setup(this.canvas);
 
   // Setup canvas event listeners
   this.activateListeners();
@@ -33,19 +34,19 @@ Dropmarker.prototype.create = function(){
 
 Dropmarker.prototype.activateListeners = function(){
   var self = this;
-  var canvas = self.two.renderer.domElement;
 
-  self.bindPanListener(canvas, function(e){
-    self.pan(e);
-  });
 
-  canvas.addEventListener("mousemove", function(e){
-    self.mousemove(e);
-  });
+
+  // self.bindDragListener(canvas, function(e){
+  //   self.pan(e);
+  // });
+
+  // canvas.addEventListener("mousemove", function(e){
+  //   self.mousemove(e);
+  // });
 };
 
-// Panning (AKA click + drag)
-Dropmarker.prototype.bindPanListener = function(element, callback){
+Dropmarker.prototype.bindDragListener = function(element, callback){
   var listener = new Hammer(element, {
     recognizers: [
       [Hammer.Pan, {
