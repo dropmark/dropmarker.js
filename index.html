@@ -6,8 +6,12 @@
       margin: 0;
     }
 
+    .buttons{
+      margin: 50px 0 0 50px;
+    }
+
     .canvas-wrap{
-      margin: 100px;
+      margin: 50px 0 0 50px;
       display: inline-block;
       user-select: none;
       -webkit-user-select: none;
@@ -18,6 +22,7 @@
       top: 0;
       left: 0;
       border: 1px solid red;
+      cursor: crosshair;
     }
 
     img{
@@ -39,8 +44,13 @@
   </style>
 </head>
 <body>
+  <div class="buttons">
+    <button onClick="dp.setTool('arrow')">Arrow</button>
+    <button onClick="dp.setTool('brush')">Brush</button>
+  </div>
+
   <div class="canvas-wrap">
-    <img src="http://www.dropmark.com/assets/dropmark-creatives.jpg" />
+    <img src="http://cdn2.dropmark.com/76/84535d0c27b5f2d75ae9742e6b2eafb685060690/australia_night_201204-10_lrg_preview.jpg" />
   </div>
 
   <script>
@@ -50,10 +60,10 @@
       dp = new Dropmarker(wrap);
     });
   </script>
-  <script src="src/two.js"></script>
-  <script src="src/hammer.js"></script>
+  <script src="src/paper-core.js"></script>
   <script src="src/dropmarker-anchor.js"></script>
-  <script src="src/renderers/dropmarker-arrow.js"></script>
+  <script src="src/tools/dropmarker-brush.js"></script>
+  <script src="src/tools/dropmarker-arrow.js"></script>
   <script src="src/dropmarker.js"></script>
 </body>
 </html>

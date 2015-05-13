@@ -1,6 +1,6 @@
 ## Dropmarker.js
 
-`bindPanListener(element, callback)`: Binds to the `pan` event
+`bindDragListener(element, callback)`: Binds to the `pan` event
 
 ## Renderers
 

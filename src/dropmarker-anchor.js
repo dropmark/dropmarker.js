@@ -1,14 +1,13 @@
-var DropmarkerAnchor = function(dropmarker, polygon, anchor){
+var DropmarkerAnchor = function(dropmarker, point){
   this.DR = dropmarker;
-  this.anchor = anchor;
   this.element = null;
-  this.polygon = polygon;
+  this.point = point;
   this.create();
 };
 
 DropmarkerAnchor.prototype.create = function(){
-  var x = this.anchor.x + this.polygon.translation.x;
-  var y = this.anchor.y + this.polygon.translation.y;
+  var x = this.point.x;
+  var y = this.point.y;
 
   this.element = document.createElement("span");
   this.element.classList.add("dropmarker-anchor");
@@ -22,11 +21,11 @@ DropmarkerAnchor.prototype.create = function(){
 
 DropmarkerAnchor.prototype.activateEvents = function(){
   var self = this;
-  self.DR.bindPanListener(self.element, function(e){
-    var x = e.center.x - self.DR.container.offsetLeft;
-    var y = e.center.y - self.DR.container.offsetTop;
-    self.pan(x, y);
-  });
+  // self.DR.bindDragListener(self.element, function(e){
+  //   var x = e.center.x - self.DR.container.offsetLeft;
+  //   var y = e.center.y - self.DR.container.offsetTop;
+  //   self.pan(x, y);
+  // });
 }
 
 DropmarkerAnchor.prototype.pan = function(x, y){

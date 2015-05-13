@@ -2,7 +2,13 @@
 
 var Dropmarker = function(container){
   this.container = container;
-  this.renderer = new DropmarkerArrowRenderer(this);
+  this.color = "red";
+  this.hoverColor = "#38dedf";
+  this.tools = {
+    "arrow": new DropmarkerArrowTool(this),
+    "brush": new DropmarkerBrushTool(this)
+  };
+
   this.cache = {
     width: this.container.offsetWidth,
     height: this.container.offsetHeight
@@ -10,20 +16,19 @@ var Dropmarker = function(container){
 
   // kick things off
   this.create();
+  this.setTool("arrow");
 };
 
 
 Dropmarker.prototype.create = function(){
   // Create canvas
-  var params = {
-    type: Two.Types.canvas,
-    width: this.cache.width,
-    height: this.cache.height
-  };
-  this.two = new Two(params).appendTo(this.container);
+  this.canvas = document.createElement('canvas');
+  this.canvas.style.width = this.cache.width + 'px';
+  this.canvas.style.height = this.cache.height + 'px';
+  this.container.appendChild(this.canvas);
 
-  // Setup canvas event listeners
-  this.activateListeners();
+  // Create a Paper project
+  paper.setup(this.canvas);
 
   this.container.classList.add("dropmarker-active");
   this.container.style.position = "relative";
@@ -31,60 +36,6 @@ Dropmarker.prototype.create = function(){
   this.container.style.height = this.cache.height;
 };
 
-Dropmarker.prototype.activateListeners = function(){
-  var self = this;
-  var canvas = self.two.renderer.domElement;
-
-  self.bindPanListener(canvas, function(e){
-    self.pan(e);
-  });
-
-  canvas.addEventListener("mousemove", function(e){
-    self.mousemove(e);
-  });
-};
-
-// Panning (AKA click + drag)
-Dropmarker.prototype.bindPanListener = function(element, callback){
-  var listener = new Hammer(element, {
-    recognizers: [
-      [Hammer.Pan, {
-          direction: Hammer.DIRECTION_ALL,
-          threshold: 3
-        }
-      ]
-    ]
-  });
-
-  listener.on("pan", function(e){
-    callback(e);
-  });
+Dropmarker.prototype.setTool = function(name){
+  this.tools[name].activate();
 }
-
-// Fired on pan. Most of the good stuff is done in the renderer.
-Dropmarker.prototype.pan = function(e){
-  var self = this;
-
-  // console.log(e);
-
-  // console.log(self.container.offsetTop);
-  console.log(e.center.y);
-
-
-  // TODO: Cache container width/height?
-  var pos = {
-    x: e.center.x - self.container.offsetLeft,
-    y: e.center.y - self.container.offsetTop,
-    angle: e.angle
-  };
-
-  self.renderer.render(pos);
-
-  if(e.isFinal){
-    self.renderer.finalize();
-  }
-};
-
-Dropmarker.prototype.mousemove = function(e){
-  // console.log(e);
-};
