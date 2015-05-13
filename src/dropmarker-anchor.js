@@ -3,18 +3,19 @@ var DropmarkerAnchor = function(dropmarker, polygon, anchor){
   this.anchor = anchor;
   this.element = null;
   this.polygon = polygon;
-  this.x = this.anchor.x + this.polygon.translation.x;
-  this.y = this.anchor.y + this.polygon.translation.y;
   this.create();
 };
 
 DropmarkerAnchor.prototype.create = function(){
+  var x = this.anchor.x + this.polygon.translation.x;
+  var y = this.anchor.y + this.polygon.translation.y;
+
   this.element = document.createElement("span");
   this.element.classList.add("dropmarker-anchor");
   // this.element.setAttribute("data-anchor", this.anchorId);
   // this.element.setAttribute("data-polygon", this.polygon.id);
-  this.element.style.left = this.x + "px";
-  this.element.style.top = this.y + "px";
+  this.element.style.left = x + "px";
+  this.element.style.top = y + "px";
   this.DR.container.appendChild(this.element);
   this.activateEvents();
 };
@@ -29,12 +30,9 @@ DropmarkerAnchor.prototype.activateEvents = function(){
 }
 
 DropmarkerAnchor.prototype.pan = function(x, y){
-  this.x = x;
-  this.y = y;
-
-  this.element.style.left = this.x + "px";
-  this.element.style.top = this.y + "px";
-  this.anchor.x = this.x;
-  this.anchor.y = this.y;
+  this.element.style.left = x + "px";
+  this.element.style.top = y + "px";
+  this.anchor.x = x - this.polygon.translation.x;
+  this.anchor.y = y - this.polygon.translation.y;
   this.DR.two.update();
 }
