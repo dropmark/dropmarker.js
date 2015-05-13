@@ -70,16 +70,16 @@ DropmarkerArrow.prototype.draw = function(toolEvent){
     var segments = self.line.segments;
     var startPoint = segments[0].point;
     var endPoint = segments[1].point;
-    var delta = endPoint.subtract(startPoint);
+    var vector = endPoint.subtract(startPoint);
 
     endPoint.x = x;
     endPoint.y = y;
 
     // This is kinda hacky, but necessary (?) since Paper.js rotations are incremental.
     // We undo the previous rotation and apply our new rotation afterwards:
-    self.head.rotate(self.angle * -1);
-    self.head.rotate(delta.angle, toolEvent.point);
-    self.angle = delta.angle;
+    self.head.rotate(self.angle * -1, toolEvent.point);
+    self.head.rotate(vector.angle, toolEvent.point);
+    self.angle = vector.angle;
   } else {
     self.create(x, y);
   }
