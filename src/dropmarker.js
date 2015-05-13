@@ -65,11 +65,20 @@ Dropmarker.prototype.bindPanListener = function(element, callback){
 Dropmarker.prototype.pan = function(e){
   var self = this;
 
-  // TODO: Cache container width/height?
-  var x = e.center.x - self.container.offsetLeft;
-  var y = e.center.y - self.container.offsetTop;
+  // console.log(e);
 
-  self.renderer.render(x, y);
+  // console.log(self.container.offsetTop);
+  console.log(e.center.y);
+
+
+  // TODO: Cache container width/height?
+  var pos = {
+    x: e.center.x - self.container.offsetLeft,
+    y: e.center.y - self.container.offsetTop,
+    angle: e.angle
+  };
+
+  self.renderer.render(pos);
 
   if(e.isFinal){
     self.renderer.finalize();
@@ -78,4 +87,4 @@ Dropmarker.prototype.pan = function(e){
 
 Dropmarker.prototype.mousemove = function(e){
   // console.log(e);
-}
+};
