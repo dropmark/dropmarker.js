@@ -3,7 +3,6 @@
 var DropmarkerBrushTool = function(dropmarker){
   var self = this;
   self.DR = dropmarker;
-  self.color = self.DR.color;
   self.tool = new paper.Tool();
   self.minDistance = 5;
 
@@ -29,7 +28,7 @@ DropmarkerBrushTool.prototype.activate = function(){
 
 DropmarkerBrushTool.prototype.createPath = function() {
   this.path = new paper.Path();
-  this.path.strokeColor = this.color;
+  this.path.strokeColor = this.DR.color;
   this.path.strokeWidth = "5";
 };
 

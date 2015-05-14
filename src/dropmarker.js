@@ -2,13 +2,12 @@
 
 var Dropmarker = function(container){
   this.create = true; // disabled when we're editing an existing shape
+  this.color = "red";
   this.container = container;
   this.cache = {
     width: this.container.offsetWidth,
     height: this.container.offsetHeight
   };
-  this.color = "red";
-  this.hoverColor = "#38dedf";
   this.selectedItem = null;
   this.tools = {
     "arrow": new DropmarkerArrowTool(this),
@@ -28,6 +27,10 @@ Dropmarker.prototype.resetCanvas = function(){
 
 Dropmarker.prototype.setTool = function(name){
   this.tools[name].activate();
+};
+
+Dropmarker.prototype.setColor = function(val){
+  this.color = val;
 };
 
 Dropmarker.prototype._init = function(){
