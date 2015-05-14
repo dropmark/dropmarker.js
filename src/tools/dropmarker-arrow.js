@@ -26,12 +26,14 @@ DropmarkerArrowTool.prototype.activate = function(){
 }
 
 DropmarkerArrowTool.prototype.onMouseDrag = function(toolEvent){
+  if(!this.DR.create) return;
 
   if(!this.arrow){
-    this.arrow = new DropmarkerArrow(this.DR);
+    this.DR.deselectSelectedItem();
+    this.arrow = new DropmarkerArrow(this.DR, this.startingPoint);
   }
 
-  this.arrow.draw(toolEvent, this.startingPoint);
+  this.arrow.draw(toolEvent);
 };
 
 DropmarkerArrowTool.prototype.onMouseUp = function(){
@@ -43,31 +45,39 @@ DropmarkerArrowTool.prototype.onMouseUp = function(){
 
 // -------------------------- Arrow -------------------------- //
 
-var DropmarkerArrow = function(dropmarker){
+var DropmarkerArrow = function(dropmarker, startingPoint){
   this.DR = dropmarker;
   this.color = this.DR.color;
+  this.startingPoint = startingPoint;
+  this.endingPoint = null;
+  this.movingPoint = null; // set when we click and drag a point
+  this.linePath = null;
 };
 
-DropmarkerArrow.prototype.draw = function(toolEvent, startingPoint){
+DropmarkerArrow.prototype.draw = function(toolEvent){
   var self = this;
 
   // Since we're using paper-core, we need to use the `pointA.subtract` and `pointA.add`
   // methods rather than being able to do `pointA + pointB`
   // http://paperjs.org/tutorials/geometry/vector-geometry/#addition-and-subtraction
-  var vector = toolEvent.point.subtract(startingPoint);
-  var endingPoint = startingPoint.add(vector);
+  var vector = toolEvent.point.subtract(self.startingPoint);
+  self.endingPoint = self.startingPoint.add(vector);
   var arrowVector = vector.normalize(15);
 
   if(self.group){
-    self.group.remove();
+    self.group.removeChildren();
+  } else {
+    self.group = new paper.Group();
   }
 
-  self.group = new paper.Group([
-    new paper.Path([startingPoint, endingPoint]),
+  self.linePath = new paper.Path([self.startingPoint, self.endingPoint]);
+
+  self.group.addChildren([
+    self.linePath,
     new paper.Path([
-      endingPoint.add(arrowVector.rotate(135)),
-      endingPoint,
-      endingPoint.add(arrowVector.rotate(-135))
+      self.endingPoint.add(arrowVector.rotate(135)),
+      self.endingPoint,
+      self.endingPoint.add(arrowVector.rotate(-135))
     ])
   ]);
 
@@ -81,19 +91,36 @@ DropmarkerArrow.prototype.draw = function(toolEvent, startingPoint){
 DropmarkerArrow.prototype.finalize = function(){
   var self = this;
 
-  self.group.onClick = function(event){
-    self.onClick();
+  self.group.onMouseDown = function(event){
+    if(self.endingPoint.getDistance(event.point) < 10){
+      self.DR.create = false;
+      self.movingPoint = self.endingPoint;
+    }
+  };
+
+  self.group.onMouseDrag = function(event){
+    if(self.movingPoint){
+      self.draw(event);
+    }
+  };
+
+  self.group.onMouseUp = function(){
+    if(self.movingPoint){
+      self.movingPoint = null;
+      self.DR.create = true;
+      self.finalize();
+    }
+  };
+
+  self.group.onClick = function(){
+    self.DR.toggleSelectedItem(self.linePath);
   };
 
   self.group.onMouseEnter = function(){
-    self.group.strokeColor = self.DR.hoverColor;
+    self.DR.setCursor('pointer');
   };
 
   self.group.onMouseLeave = function(){
-    self.group.strokeColor = self.color;
+    self.DR.resetCursor();
   };
-}
-
-DropmarkerArrow.prototype.onClick = function(){
-  this.group.fullySelected = !this.group.fullySelected;
 };

@@ -10,15 +10,18 @@ var DropmarkerBrushTool = function(dropmarker){
   self.minDistance = 5;
 
   self.tool.onMouseDown = function(event) {
-    self.onMouseDown(event);
+    if(self.DR.create)
+      self.createPath(event);
   };
 
   self.tool.onMouseDrag = function(event) {
-    self.onMouseDrag(event);
+    if(self.DR.create)
+      self.drawPath(event);
   };
 
   self.tool.onMouseUp = function(){
-    self.onMouseUp();
+    if(self.DR.create)
+      self.finalizePath();
   };
 };
 
@@ -26,17 +29,17 @@ DropmarkerBrushTool.prototype.activate = function(){
   this.tool.activate();
 }
 
-DropmarkerBrushTool.prototype.onMouseDown = function(event) {
+DropmarkerBrushTool.prototype.createPath = function(event) {
   this.path = new paper.Path();
   this.path.strokeColor = this.color;
   this.path.strokeWidth = '5';
 }
 
-DropmarkerBrushTool.prototype.onMouseDrag = function(event){
+DropmarkerBrushTool.prototype.drawPath = function(event){
   this.path.add(event.point);
 };
 
-DropmarkerBrushTool.prototype.onMouseUp = function(){
+DropmarkerBrushTool.prototype.finalizePath = function(){
   this.path.smooth();
 };
 
