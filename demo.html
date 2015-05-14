@@ -21,6 +21,7 @@
       display: inline-block;
       user-select: none;
       -webkit-user-select: none;
+      position: relative;
     }
 
     canvas{
@@ -44,34 +45,33 @@
   <div class="buttons">
     <button onClick="DR.setTool('arrow')">Arrow</button>
     <button onClick="DR.setTool('brush')">Brush</button>
+    <button onClick="DR.setTool('highlighter')">Highlighter</button>
     <button onClick="exportCanvas()">Export</button>
     <button onClick="DR.resetCanvas()">Reset</button>
     <button onClick="DR.setColor('red')" style="background: red"></button>
     <button onClick="DR.setColor('blue')" style="background: blue"></button>
+    <button onClick="DR.setColor('yellow')" style="background: yellow"></button>
+    <input type="range" min="2" max="30" value="5" onChange="DR.setSize(this.value)">
   </div>
 
   <code class="exported-canvas"></code>
+  <div class="canvas-wrap"></div>
 
-  <div class="canvas-wrap">
-    <img src="http://cdn2.dropmark.com/76/84535d0c27b5f2d75ae9742e6b2eafb685060690/australia_night_201204-10_lrg_preview.jpg" />
-  </div>
+  <script src="demo-image.js"></script>
+  <script src="src/paper-core.js"></script>
+  <script src="src/tools/dropmarker-freehand.js"></script>
+  <script src="src/tools/dropmarker-arrow.js"></script>
+  <script src="src/dropmarker.js"></script>
 
   <script>
     var wrap = document.querySelector('.canvas-wrap');
-    var DR = null;
-    window.addEventListener('load', function(){
-      DR = new Dropmarker(wrap);
-    });
+    var DR = new Dropmarker(wrap, demoImage64);
 
     function exportCanvas(){
       var ex = DR.exportCanvas();
       var exWrap = document.querySelector('.exported-canvas');
-      exWrap.innerHTML = ex;
+      exWrap.innerHTML = "<img src='"+ ex +"' />";
     }
   </script>
-  <script src="src/paper-core.js"></script>
-  <script src="src/tools/dropmarker-brush.js"></script>
-  <script src="src/tools/dropmarker-arrow.js"></script>
-  <script src="src/dropmarker.js"></script>
 </body>
 </html>

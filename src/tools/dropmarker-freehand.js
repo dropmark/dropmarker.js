@@ -1,10 +1,11 @@
 "use strict";
 
-var DropmarkerBrushTool = function(dropmarker){
+var DropmarkerFreehandTool = function(dropmarker, kind){
   var self = this;
   self.DR = dropmarker;
   self.tool = new paper.Tool();
   self.minDistance = 5;
+  self.kind = kind;
 
   self.tool.onMouseDown = function() {
     if(self.DR.create)
@@ -22,20 +23,27 @@ var DropmarkerBrushTool = function(dropmarker){
   };
 };
 
-DropmarkerBrushTool.prototype.activate = function(){
+DropmarkerFreehandTool.prototype.activate = function(){
   this.tool.activate();
 };
 
-DropmarkerBrushTool.prototype.createPath = function() {
+DropmarkerFreehandTool.prototype.createPath = function() {
   this.path = new paper.Path();
   this.path.strokeColor = this.DR.color;
-  this.path.strokeWidth = "5";
+  this.path.strokeWidth = this.DR.pathSize;
+
+  if(this.kind == 'highlighter'){
+    this.path.strokeColor.alpha = 0.8;
+    this.path.blendMode = 'multiply';
+  } else {
+    this.path.strokeCap = 'round';
+  }
 };
 
-DropmarkerBrushTool.prototype.drawPath = function(event){
+DropmarkerFreehandTool.prototype.drawPath = function(event){
   this.path.add(event.point);
 };
 
-DropmarkerBrushTool.prototype.finalizePath = function(){
+DropmarkerFreehandTool.prototype.finalizePath = function(){
   this.path.simplify();
 };

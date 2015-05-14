@@ -13,5 +13,5 @@ Dropmarker.js adds very basic drawing capabilities in the browser. *See `demo.ht
 
 - `setTool(name)`: Changes the active tool. Valid names are: `arrow` (default) and `brush`
 - `setColor(val)`: Sets the color for new paths. Can be any valid CSS color value.
-- `exportCanvas(kind, background)`: Exports canvas as a string. Valid kinds are: `json` (default), `svg`, and `image`. If `kind` is set as `image`, you can also pass through an image url as a second param and it will be set as the canvas's background. **Important**: Background images must have CORS enabled, otherwise it will taint the canvas.
+- `exportCanvas(kind)`: Exports canvas as a string. Valid kinds are: `json`, `svg`, and `image` (base64, default).
 - `resetCanvas`: Clears the canvas to its blank state
