@@ -10,8 +10,8 @@ var Dropmarker = function(container, image64){
   this.selectedItem = null;
   this.tools = {
     "arrow": new DropmarkerArrowTool(this),
-    "brush": new DropmarkerFreehandTool(this, 'brush'),
-    "highlighter": new DropmarkerFreehandTool(this, 'highlighter')
+    "brush": new DropmarkerFreehandTool(this, "brush"),
+    "highlighter": new DropmarkerFreehandTool(this, "highlighter")
   };
 
   // kick things off
@@ -29,10 +29,10 @@ Dropmarker.prototype.exportCanvas = function(kind){
   var self = this;
 
   switch(kind){
-    case 'json':
+    case "json":
       str = paper.project.exportJSON();
       break;
-    case 'svg':
+    case "svg":
       str = paper.project.exportSVG();
       break;
     default:

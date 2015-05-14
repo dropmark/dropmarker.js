@@ -15,3 +15,11 @@ Dropmarker.js adds very basic drawing capabilities in the browser. *See `demo.ht
 - `setColor(val)`: Sets the color for new paths. Can be any valid CSS color value.
 - `exportCanvas(kind)`: Exports canvas as a string. Valid kinds are: `json`, `svg`, and `image` (base64, default).
 - `resetCanvas`: Clears the canvas to its blank state
+
+## Building
+
+```
+npm install
+```
+
+Then run `gulp` to bundle and minify.

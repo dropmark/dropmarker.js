@@ -1,0 +1,21 @@
+{
+  "name": "dropmarker",
+  "version": "1.0.0",
+  "description": "Basic drawing in the browser using paper.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dropmark/dropmarker.js.git"
+  },
+  "author": "Oak Studios LLC",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/dropmark/dropmarker.js/issues"
+  },
+  "homepage": "http://www.dropmark.com/",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-bundle-assets": "^2.20.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.2.0"
+  }
+}
