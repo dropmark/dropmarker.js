@@ -84,8 +84,6 @@ DropmarkerArrow.prototype.draw = function(toolEvent){
   self.group.strokeWidth = 5;
   self.group.strokeColor = self.color;
   self.group.strokeCap = "round"
-
-  paper.view.draw();
 };
 
 DropmarkerArrow.prototype.finalize = function(){

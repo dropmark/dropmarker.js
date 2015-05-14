@@ -37,6 +37,11 @@ Dropmarker.prototype.init = function(){
   this.container.style.height = this.cache.height;
 };
 
+Dropmarker.prototype.resetCanvas = function(){
+  paper.project.clear();
+  paper.view.update();
+};
+
 Dropmarker.prototype.setTool = function(name){
   this.tools[name].activate();
 }
