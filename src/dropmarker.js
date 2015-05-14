@@ -1,6 +1,7 @@
 "use strict";
 
 var Dropmarker = function(container){
+  this.canvas = null;
   this.create = true; // disabled when we're editing an existing shape
   this.color = "red";
   this.container = container;
@@ -17,6 +18,26 @@ var Dropmarker = function(container){
   // kick things off
   this._init();
   this.setTool("arrow");
+};
+
+Dropmarker.prototype.exportCanvas = function(kind, background){
+  var str;
+  var self = this;
+
+  switch(kind){
+    case 'image':
+      if(background) self._setBackground(background);
+      str = self.canvas.toDataURL();
+      if(background) self._resetBackground();
+      break;
+    case 'svg':
+      str = paper.project.exportSVG();
+      break;
+    default:
+      str = paper.project.exportJSON();
+  }
+
+  return str;
 };
 
 Dropmarker.prototype.resetCanvas = function(){
@@ -47,6 +68,16 @@ Dropmarker.prototype._init = function(){
   this.container.style.position = "relative";
   this.container.style.width = this.cache.width;
   this.container.style.height = this.cache.height;
+};
+
+Dropmarker.prototype._setBackground = function(background){
+  this.background = new paper.Raster(background);
+  paper.view.draw();
+};
+
+Dropmarker.prototype._resetBackground = function(){
+  this.background.remove();
+  paper.view.update();
 };
 
 Dropmarker.prototype._setCursor = function(value){

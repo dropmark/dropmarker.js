@@ -37,5 +37,5 @@ DropmarkerBrushTool.prototype.drawPath = function(event){
 };
 
 DropmarkerBrushTool.prototype.finalizePath = function(){
-  this.path.smooth();
+  this.path.simplify();
 };
