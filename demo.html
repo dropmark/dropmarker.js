@@ -32,25 +32,13 @@
     .dropmarker-active{
       cursor: crosshair;
     }
-
-    .dropmarker-anchor{
-      display: inline-block;
-      width: 10px;
-      height: 10px;
-      margin: -5px 0 0 -5px;
-      background: rgba(255, 255, 255, 0.75);
-      border: 2px solid rgba(0, 0, 0, 0.75);
-      border-radius: 50%;
-      cursor: move;
-      position: absolute;
-    }
   </style>
 </head>
 <body>
   <div class="buttons">
-    <button onClick="dp.setTool('arrow')">Arrow</button>
-    <button onClick="dp.setTool('brush')">Brush</button>
-    <button onClick="dp.resetCanvas()">Reset</button>
+    <button onClick="DR.setTool('arrow')">Arrow</button>
+    <button onClick="DR.setTool('brush')">Brush</button>
+    <button onClick="DR.resetCanvas()">Reset</button>
   </div>
 
   <div class="canvas-wrap">
@@ -59,13 +47,12 @@
 
   <script>
     var wrap = document.querySelector('.canvas-wrap');
-    var dp = null;
+    var DR = null;
     window.addEventListener('load', function(){
-      dp = new Dropmarker(wrap);
+      DR = new Dropmarker(wrap);
     });
   </script>
   <script src="src/paper-core.js"></script>
-  <script src="src/dropmarker-anchor.js"></script>
   <script src="src/tools/dropmarker-brush.js"></script>
   <script src="src/tools/dropmarker-arrow.js"></script>
   <script src="src/dropmarker.js"></script>

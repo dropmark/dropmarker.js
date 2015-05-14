@@ -1,6 +1,6 @@
 "use strict";
 
-// -------------------------- ArrowRenderer -------------------------- //
+// -------------------------- Tool -------------------------- //
 
 var DropmarkerArrowTool = function(dropmarker){
   var self = this;
@@ -14,7 +14,7 @@ var DropmarkerArrowTool = function(dropmarker){
 
   self.tool.onMouseDown = function(event){
     self.startingPoint = event.point;
-  }
+  };
 
   self.tool.onMouseUp = function(){
     self.onMouseUp();
@@ -23,13 +23,13 @@ var DropmarkerArrowTool = function(dropmarker){
 
 DropmarkerArrowTool.prototype.activate = function(){
   this.tool.activate();
-}
+};
 
 DropmarkerArrowTool.prototype.onMouseDrag = function(toolEvent){
   if(!this.DR.create) return;
 
   if(!this.arrow){
-    this.DR.deselectSelectedItem();
+    this.DR._deselectSelectedItem();
     this.arrow = new DropmarkerArrow(this.DR, this.startingPoint);
   }
 
@@ -71,7 +71,6 @@ DropmarkerArrow.prototype.draw = function(toolEvent){
   }
 
   self.linePath = new paper.Path([self.startingPoint, self.endingPoint]);
-
   self.group.addChildren([
     self.linePath,
     new paper.Path([
@@ -83,14 +82,17 @@ DropmarkerArrow.prototype.draw = function(toolEvent){
 
   self.group.strokeWidth = 5;
   self.group.strokeColor = self.color;
-  self.group.strokeCap = "round"
+  self.group.strokeCap = "round";
 };
 
 DropmarkerArrow.prototype.finalize = function(){
   var self = this;
 
   self.group.onMouseDown = function(event){
-    if(self.endingPoint.getDistance(event.point) < 10){
+    // Update starting and ending points in case the arrow was moved:
+    self.startingPoint = self.linePath.segments[0].point;
+    self.endingPoint = self.linePath.segments[1].point;
+    if(self.endingPoint.getDistance(event.point) < 20){
       self.DR.create = false;
       self.movingPoint = self.endingPoint;
     }
@@ -98,27 +100,36 @@ DropmarkerArrow.prototype.finalize = function(){
 
   self.group.onMouseDrag = function(event){
     if(self.movingPoint){
+      self.DR._deselectSelectedItem();
       self.draw(event);
+    } else {
+      self.DR._moveItem(self.group, event.point);
     }
   };
 
   self.group.onMouseUp = function(){
-    if(self.movingPoint){
-      self.movingPoint = null;
-      self.DR.create = true;
-      self.finalize();
-    }
+    self.movingPoint = null;
+    self.DR.create = true;
   };
 
   self.group.onClick = function(){
-    self.DR.toggleSelectedItem(self.linePath);
+    self.DR._toggleSelectedItem(self.linePath);
+    self.updateCursor();
   };
 
   self.group.onMouseEnter = function(){
-    self.DR.setCursor('pointer');
+    self.updateCursor();
   };
 
   self.group.onMouseLeave = function(){
-    self.DR.resetCursor();
+    self.DR._resetCursor();
   };
 };
+
+DropmarkerArrow.prototype.updateCursor = function(){
+  if(this.linePath.fullySelected){
+    this.DR._setCursor("move");
+  } else {
+    this.DR._setCursor("pointer");
+  }
+}

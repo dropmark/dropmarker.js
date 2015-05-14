@@ -1,7 +1,15 @@
 ## Dropmarker.js
 
-`bindDragListener(element, callback)`: Binds to the `pan` event
+Dropmarker.js adds very basic drawing capabilities in the browser. *See `demo.html` for a very basic example.*
 
-## Renderers
+Creating a Dropmarker instance:
 
-A renderer determines what happens when a user pans (or click + drags) on the canvas. When a user pans, the renderer's `render` method is called with the `x` and `y` positions (relative to the canvas).
+```
+  var wrap = document.querySelector('.canvas-wrap');
+  var DR = new Dropmarker(wrap);
+```
+
+Methods:
+
+- `setTool(name)`: Changes the active tool. Available options are `arrow` (default) and `brush`
+- `resetCanvas`: Clears the canvas to its blank state

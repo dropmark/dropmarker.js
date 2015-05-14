@@ -16,16 +16,25 @@ var Dropmarker = function(container){
   };
 
   // kick things off
-  this.init();
+  this._init();
   this.setTool("arrow");
 };
 
+Dropmarker.prototype.resetCanvas = function(){
+  paper.project.clear();
+  paper.view.update();
+  this._resetCursor();
+};
 
-Dropmarker.prototype.init = function(){
+Dropmarker.prototype.setTool = function(name){
+  this.tools[name].activate();
+};
+
+Dropmarker.prototype._init = function(){
   // Create canvas
-  this.canvas = document.createElement('canvas');
-  this.canvas.style.width = this.cache.width + 'px';
-  this.canvas.style.height = this.cache.height + 'px';
+  this.canvas = document.createElement("canvas");
+  this.canvas.style.width = this.cache.width + "px";
+  this.canvas.style.height = this.cache.height + "px";
   this.container.appendChild(this.canvas);
 
   // Create a Paper project
@@ -37,32 +46,28 @@ Dropmarker.prototype.init = function(){
   this.container.style.height = this.cache.height;
 };
 
-Dropmarker.prototype.resetCanvas = function(){
-  paper.project.clear();
-  paper.view.update();
+Dropmarker.prototype._setCursor = function(value){
+  this.container.style.cursor = value;
 };
 
-Dropmarker.prototype.setTool = function(name){
-  this.tools[name].activate();
-}
+Dropmarker.prototype._resetCursor = function(){
+  this.container.style.removeProperty("cursor");
+};
 
-Dropmarker.prototype.setCursor = function(value){
-  this.container.style.cursor = value;
-}
-
-Dropmarker.prototype.resetCursor = function(){
-  this.container.style.removeProperty('cursor');
-}
-
-Dropmarker.prototype.deselectSelectedItem = function(){
+Dropmarker.prototype._deselectSelectedItem = function(){
   if(this.selectedItem){
     this.selectedItem.fullySelected = false;
   }
-}
+};
 
-Dropmarker.prototype.toggleSelectedItem = function(item){
+Dropmarker.prototype._moveItem = function(item, point){
+  this.create = false;
+  item.position = point;
+};
+
+Dropmarker.prototype._toggleSelectedItem = function(item){
   if(this.selectedItem && this.selectedItem.id != item.id)
-    this.deselectSelectedItem();
+    this._deselectSelectedItem();
 
   if(item.fullySelected){
     item.fullySelected = false;
@@ -71,4 +76,4 @@ Dropmarker.prototype.toggleSelectedItem = function(item){
     item.fullySelected = true;
     this.selectedItem = item;
   }
-}
+};

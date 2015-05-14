@@ -1,7 +1,5 @@
 "use strict";
 
-// -------------------------- ArrowRenderer -------------------------- //
-
 var DropmarkerBrushTool = function(dropmarker){
   var self = this;
   self.DR = dropmarker;
@@ -9,9 +7,9 @@ var DropmarkerBrushTool = function(dropmarker){
   self.tool = new paper.Tool();
   self.minDistance = 5;
 
-  self.tool.onMouseDown = function(event) {
+  self.tool.onMouseDown = function() {
     if(self.DR.create)
-      self.createPath(event);
+      self.createPath();
   };
 
   self.tool.onMouseDrag = function(event) {
@@ -27,13 +25,13 @@ var DropmarkerBrushTool = function(dropmarker){
 
 DropmarkerBrushTool.prototype.activate = function(){
   this.tool.activate();
-}
+};
 
-DropmarkerBrushTool.prototype.createPath = function(event) {
+DropmarkerBrushTool.prototype.createPath = function() {
   this.path = new paper.Path();
   this.path.strokeColor = this.color;
-  this.path.strokeWidth = '5';
-}
+  this.path.strokeWidth = "5";
+};
 
 DropmarkerBrushTool.prototype.drawPath = function(event){
   this.path.add(event.point);
@@ -42,5 +40,3 @@ DropmarkerBrushTool.prototype.drawPath = function(event){
 DropmarkerBrushTool.prototype.finalizePath = function(){
   this.path.smooth();
 };
-
-// -------------------------- Arrow -------------------------- //
