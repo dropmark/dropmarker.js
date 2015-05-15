@@ -2,26 +2,40 @@
 
 var Dropmarker = function(container, image64){
   this.canvas = null;
-  this.create = true; // disabled when we're editing an existing shape
   this.color = "red";
+  this.create = true; // disabled when we're editing an existing shape
   this.container = container;
   this.image64 = image64;
   this.pathSize = 10;
+  this.selectMode = false;
   this.selectedItem = null;
   this.tools = {
-    "arrow": new DropmarkerArrowTool(this),
-    "brush": new DropmarkerFreehandTool(this, "brush"),
-    "highlighter": new DropmarkerFreehandTool(this, "highlighter")
+    select: {
+      tool: new paper.Tool(),
+      shortcut: 86 // v
+    },
+    arrow: {
+      tool: new DropmarkerArrowTool(this),
+      shortcut: 65 // a
+    },
+    brush: {
+      tool: new DropmarkerFreehandTool(this, "brush"),
+      shortcut: 66 // b
+    },
+    highlighter: {
+      tool: new DropmarkerFreehandTool(this, "highlighter"),
+      shortcut: 72 // h
+    }
   };
 
   // kick things off
   this._init();
 
-  if(this.image64){
+  if(this.image64)
     this._setBackground();
-  }
 
   this.setTool("arrow");
+  this._bindListeners();
 };
 
 Dropmarker.prototype.exportCanvas = function(kind){
@@ -50,11 +64,26 @@ Dropmarker.prototype.resetCanvas = function(){
 };
 
 Dropmarker.prototype.setTool = function(name){
-  this.tools[name].activate();
+  this.selectMode = (name == "select");
+  console.log("set tool to : " + name);
+  console.log("selectMode: " + this.selectMode);
+
+  if(this.selectMode){
+    this._setCursor("auto");
+  }
+
+  this._deselectSelectedItem();
+  paper.view.update();
+  this.tools[name].tool.activate();
 };
 
 Dropmarker.prototype.setColor = function(val){
   this.color = val;
+
+  if(this.selectMode && this.selectedItem){
+    this.selectedItem.strokeColor = val;
+    paper.view.update();
+  }
 };
 
 Dropmarker.prototype.setSize = function(val){
@@ -101,20 +130,33 @@ Dropmarker.prototype._deselectSelectedItem = function(){
   }
 };
 
+Dropmarker.prototype._selectItem = function(item){
+  if(this.selectedItem && this.selectedItem.id != item.id)
+    this._deselectSelectedItem();
+
+  item.fullySelected = true;
+  this.selectedItem = item;
+};
+
 Dropmarker.prototype._moveItem = function(item, point){
   this.create = false;
   item.position = point;
 };
 
-Dropmarker.prototype._toggleSelectedItem = function(item){
-  if(this.selectedItem && this.selectedItem.id != item.id)
-    this._deselectSelectedItem();
+Dropmarker.prototype._bindListeners = function(){
+  var self = this;
 
-  if(item.fullySelected){
-    item.fullySelected = false;
-    this.selectedItem = null;
-  } else {
-    item.fullySelected = true;
-    this.selectedItem = item;
-  }
+  document.addEventListener("keydown", function(e){
+    if(self.selectMode && e.keyCode == 8){ // backspace
+      self.selectedItem.remove();
+      paper.view.update();
+    } else {
+      for(var tool in self.tools){
+        if( self.tools.hasOwnProperty(tool) &&
+            self.tools[tool].shortcut == e.keyCode) {
+          self.setTool(tool);
+        }
+      }
+    }
+  });
 };

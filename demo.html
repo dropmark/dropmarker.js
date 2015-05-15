@@ -35,14 +35,11 @@
       max-width: 100%;
       vertical-align: bottom;
     }
-
-    .dropmarker-active{
-      cursor: crosshair;
-    }
   </style>
 </head>
 <body>
   <div class="buttons">
+    <button onClick="DR.setTool('select')">Selector</button>
     <button onClick="DR.setTool('arrow')">Arrow</button>
     <button onClick="DR.setTool('brush')">Brush</button>
     <button onClick="DR.setTool('highlighter')">Highlighter</button>
@@ -58,7 +55,11 @@
   <div class="canvas-wrap"></div>
 
   <script src="demo-image.js"></script>
-  <script src="dist/dropmarker.min.js"></script>
+
+  <script src="src/tools/dropmarker-arrow.js"></script>
+  <script src="src/tools/dropmarker-freehand.js"></script>
+  <script src="src/paper-core.js"></script>
+  <script src="src/dropmarker.js"></script>
 
   <script>
     var wrap = document.querySelector('.canvas-wrap');

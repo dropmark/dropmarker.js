@@ -25,6 +25,7 @@ var DropmarkerFreehandTool = function(dropmarker, kind){
 
 DropmarkerFreehandTool.prototype.activate = function(){
   this.tool.activate();
+  this.DR._setCursor('crosshair');
 };
 
 DropmarkerFreehandTool.prototype.createPath = function() {
