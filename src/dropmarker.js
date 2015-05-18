@@ -65,8 +65,6 @@ Dropmarker.prototype.resetCanvas = function(){
 
 Dropmarker.prototype.setTool = function(name){
   this.selectMode = (name == "select");
-  console.log("set tool to : " + name);
-  console.log("selectMode: " + this.selectMode);
 
   if(this.selectMode){
     this._setCursor("auto");
@@ -145,6 +143,7 @@ Dropmarker.prototype._moveItem = function(item, point){
 
 Dropmarker.prototype._bindListeners = function(){
   var self = this;
+  var selectTool = self.tools.select.tool;
 
   document.addEventListener("keydown", function(e){
     if(self.selectMode && e.keyCode == 8){ // backspace
@@ -159,4 +158,11 @@ Dropmarker.prototype._bindListeners = function(){
       }
     }
   });
+
+  selectTool.onMouseDown = function(event){
+    // Deselect any items if we're clicking the background
+    if(event.item instanceof paper.Raster){
+      self._deselectSelectedItem();
+    }
+  };
 };

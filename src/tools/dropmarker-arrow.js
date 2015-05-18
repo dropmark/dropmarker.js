@@ -24,8 +24,7 @@ var DropmarkerArrowTool = function(dropmarker){
 DropmarkerArrowTool.prototype.activate = function(){
   this.tool.activate();
   this.DR._setCursor('crosshair');
-  console.log('DropmarkerArrowTool activate');
-  console.log("Create: " + this.DR.create);
+  this.DR.create = true;
 };
 
 DropmarkerArrowTool.prototype.onMouseDrag = function(toolEvent){
