@@ -1,25 +1,27 @@
 "use strict";
 
+// -------------------------- Tool -------------------------- //
+
 var DropmarkerFreehandTool = function(dropmarker, kind){
   var self = this;
   self.DR = dropmarker;
   self.tool = new paper.Tool();
   self.minDistance = 5;
-  self.kind = kind;
+  self.path = null;
 
   self.tool.onMouseDown = function() {
     if(self.DR.create)
-      self.createPath();
+      self.path = new DropmarkerFreehandPath(self.DR, kind);
   };
 
   self.tool.onMouseDrag = function(event) {
     if(self.DR.create)
-      self.drawPath(event);
+      self.path.draw(event);
   };
 
   self.tool.onMouseUp = function(){
     if(self.DR.create)
-      self.finalizePath();
+      self.path.finalize();
   };
 };
 
@@ -29,7 +31,10 @@ DropmarkerFreehandTool.prototype.activate = function(){
   this.DR.create = true;
 };
 
-DropmarkerFreehandTool.prototype.createPath = function() {
+// -------------------------- Path -------------------------- //
+var DropmarkerFreehandPath = function(dropmarker, kind) {
+  this.DR = dropmarker;
+  this.kind = kind;
   this.path = new paper.Path();
   this.path.strokeColor = this.DR.color;
   this.path.strokeWidth = this.DR.pathSize;
@@ -42,11 +47,11 @@ DropmarkerFreehandTool.prototype.createPath = function() {
   }
 };
 
-DropmarkerFreehandTool.prototype.drawPath = function(event){
+DropmarkerFreehandPath.prototype.draw = function(event){
   this.path.add(event.point);
 };
 
-DropmarkerFreehandTool.prototype.finalizePath = function(){
+DropmarkerFreehandPath.prototype.finalize = function(){
   var self = this;
 
   self.path.simplify();
@@ -85,7 +90,7 @@ DropmarkerFreehandTool.prototype.finalizePath = function(){
   };
 };
 
-DropmarkerFreehandTool.prototype.updateCursor = function(){
+DropmarkerFreehandPath.prototype.updateCursor = function(){
   if(this.path.fullySelected){
     this.DR._setCursor("move");
   } else {
