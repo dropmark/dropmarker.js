@@ -59,7 +59,6 @@ Dropmarker.prototype.exportCanvas = function(kind){
 Dropmarker.prototype.resetCanvas = function(){
   paper.project.clear();
   paper.view.update();
-  this._resetCursor();
   this._setBackground();
 };
 
