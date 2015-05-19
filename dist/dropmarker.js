@@ -12718,6 +12718,8 @@ var DropmarkerArrowTool = function(dropmarker){
 
 DropmarkerArrowTool.prototype.activate = function(){
   this.tool.activate();
+  this.DR._setCursor('crosshair');
+  this.DR.create = true;
 };
 
 DropmarkerArrowTool.prototype.onMouseDrag = function(toolEvent){
@@ -12757,7 +12759,7 @@ DropmarkerArrow.prototype.draw = function(toolEvent){
   // http://paperjs.org/tutorials/geometry/vector-geometry/#addition-and-subtraction
   var vector = toolEvent.point.subtract(self.startingPoint);
   self.endingPoint = self.startingPoint.add(vector);
-  var arrowVector = vector.normalize(15);
+  var arrowVector = vector.normalize(3 * self.DR.pathSize);
 
   if(self.group){
     self.group.removeChildren();
@@ -12775,7 +12777,7 @@ DropmarkerArrow.prototype.draw = function(toolEvent){
     ])
   ]);
 
-  self.group.strokeWidth = 5;
+  self.group.strokeWidth = self.DR.pathSize;
   self.group.strokeColor = self.color;
   self.group.strokeCap = "round";
 };
@@ -12784,18 +12786,27 @@ DropmarkerArrow.prototype.finalize = function(){
   var self = this;
 
   self.group.onMouseDown = function(event){
+    if(!self.DR.selectMode) return;
+
+    self.DR._deselectSelectedItem();
+
     // Update starting and ending points in case the arrow was moved:
     self.startingPoint = self.linePath.segments[0].point;
     self.endingPoint = self.linePath.segments[1].point;
     if(self.endingPoint.getDistance(event.point) < 20){
       self.DR.create = false;
       self.movingPoint = self.endingPoint;
+    } else {
+      // Only select the item if we're not changing its head position
+      // (otherwise Paper throws an error)
+      self.DR._selectItem(self.group);
     }
   };
 
   self.group.onMouseDrag = function(event){
+    if(!self.DR.selectMode) return;
+
     if(self.movingPoint){
-      self.DR._deselectSelectedItem();
       self.draw(event);
     } else {
       self.DR._moveItem(self.group, event.point);
@@ -12803,61 +12814,73 @@ DropmarkerArrow.prototype.finalize = function(){
   };
 
   self.group.onMouseUp = function(){
+    if(!self.DR.selectMode) return;
+    self.DR._selectItem(self.group);
     self.movingPoint = null;
     self.DR.create = true;
   };
 
   self.group.onClick = function(){
-    self.DR._toggleSelectedItem(self.linePath);
+    if(!self.DR.selectMode) return;
     self.updateCursor();
   };
 
   self.group.onMouseEnter = function(){
+    if(!self.DR.selectMode) return;
     self.updateCursor();
   };
 
   self.group.onMouseLeave = function(){
+    if(!self.DR.selectMode) return;
     self.DR._resetCursor();
   };
 };
 
 DropmarkerArrow.prototype.updateCursor = function(){
-  if(this.linePath.fullySelected){
+  if(this.group.fullySelected){
     this.DR._setCursor("move");
   } else {
     this.DR._setCursor("pointer");
   }
 }
+
 "use strict";
+
+// -------------------------- Tool -------------------------- //
 
 var DropmarkerFreehandTool = function(dropmarker, kind){
   var self = this;
   self.DR = dropmarker;
   self.tool = new paper.Tool();
   self.minDistance = 5;
-  self.kind = kind;
+  self.path = null;
 
   self.tool.onMouseDown = function() {
     if(self.DR.create)
-      self.createPath();
+      self.path = new DropmarkerFreehandPath(self.DR, kind);
   };
 
   self.tool.onMouseDrag = function(event) {
     if(self.DR.create)
-      self.drawPath(event);
+      self.path.draw(event);
   };
 
   self.tool.onMouseUp = function(){
     if(self.DR.create)
-      self.finalizePath();
+      self.path.finalize();
   };
 };
 
 DropmarkerFreehandTool.prototype.activate = function(){
   this.tool.activate();
+  this.DR._setCursor('crosshair');
+  this.DR.create = true;
 };
 
-DropmarkerFreehandTool.prototype.createPath = function() {
+// -------------------------- Path -------------------------- //
+var DropmarkerFreehandPath = function(dropmarker, kind) {
+  this.DR = dropmarker;
+  this.kind = kind;
   this.path = new paper.Path();
   this.path.strokeColor = this.DR.color;
   this.path.strokeWidth = this.DR.pathSize;
@@ -12870,37 +12893,94 @@ DropmarkerFreehandTool.prototype.createPath = function() {
   }
 };
 
-DropmarkerFreehandTool.prototype.drawPath = function(event){
+DropmarkerFreehandPath.prototype.draw = function(event){
   this.path.add(event.point);
 };
 
-DropmarkerFreehandTool.prototype.finalizePath = function(){
-  this.path.simplify();
+DropmarkerFreehandPath.prototype.finalize = function(){
+  var self = this;
+
+  self.path.simplify();
+
+  self.path.onMouseDown = function(event){
+    if(!self.DR.selectMode) return;
+
+    self.DR._deselectSelectedItem();
+    self.DR._selectItem(self.path);
+  };
+
+  self.path.onMouseDrag = function(event){
+    if(!self.DR.selectMode) return;
+    self.DR._moveItem(self.path, event.point);
+  };
+
+  self.path.onMouseUp = function(){
+    if(!self.DR.selectMode) return;
+    self.DR._selectItem(self.path);
+    self.DR.create = true;
+  };
+
+  self.path.onClick = function(){
+    if(!self.DR.selectMode) return;
+    self.updateCursor();
+  };
+
+  self.path.onMouseEnter = function(){
+    if(!self.DR.selectMode) return;
+    self.updateCursor();
+  };
+
+  self.path.onMouseLeave = function(){
+    if(!self.DR.selectMode) return;
+    self.DR._resetCursor();
+  };
 };
+
+DropmarkerFreehandPath.prototype.updateCursor = function(){
+  if(this.path.fullySelected){
+    this.DR._setCursor("move");
+  } else {
+    this.DR._setCursor("pointer");
+  }
+}
 "use strict";
 
 var Dropmarker = function(container, image64){
   this.canvas = null;
-  this.create = true; // disabled when we're editing an existing shape
   this.color = "red";
+  this.create = true; // disabled when we're editing an existing shape
   this.container = container;
   this.image64 = image64;
   this.pathSize = 10;
+  this.selectMode = false;
   this.selectedItem = null;
   this.tools = {
-    "arrow": new DropmarkerArrowTool(this),
-    "brush": new DropmarkerFreehandTool(this, "brush"),
-    "highlighter": new DropmarkerFreehandTool(this, "highlighter")
+    select: {
+      tool: new paper.Tool(),
+      shortcut: 86 // v
+    },
+    arrow: {
+      tool: new DropmarkerArrowTool(this),
+      shortcut: 65 // a
+    },
+    brush: {
+      tool: new DropmarkerFreehandTool(this, "brush"),
+      shortcut: 66 // b
+    },
+    highlighter: {
+      tool: new DropmarkerFreehandTool(this, "highlighter"),
+      shortcut: 72 // h
+    }
   };
 
   // kick things off
   this._init();
 
-  if(this.image64){
+  if(this.image64)
     this._setBackground();
-  }
 
   this.setTool("arrow");
+  this._bindListeners();
 };
 
 Dropmarker.prototype.exportCanvas = function(kind){
@@ -12924,16 +13004,28 @@ Dropmarker.prototype.exportCanvas = function(kind){
 Dropmarker.prototype.resetCanvas = function(){
   paper.project.clear();
   paper.view.update();
-  this._resetCursor();
   this._setBackground();
 };
 
 Dropmarker.prototype.setTool = function(name){
-  this.tools[name].activate();
+  this.selectMode = (name == "select");
+
+  if(this.selectMode){
+    this._setCursor("auto");
+  }
+
+  this._deselectSelectedItem();
+  paper.view.update();
+  this.tools[name].tool.activate();
 };
 
 Dropmarker.prototype.setColor = function(val){
   this.color = val;
+
+  if(this.selectMode && this.selectedItem){
+    this.selectedItem.strokeColor = val;
+    paper.view.update();
+  }
 };
 
 Dropmarker.prototype.setSize = function(val){
@@ -12980,20 +13072,41 @@ Dropmarker.prototype._deselectSelectedItem = function(){
   }
 };
 
+Dropmarker.prototype._selectItem = function(item){
+  if(this.selectedItem && this.selectedItem.id != item.id)
+    this._deselectSelectedItem();
+
+  item.fullySelected = true;
+  this.selectedItem = item;
+};
+
 Dropmarker.prototype._moveItem = function(item, point){
   this.create = false;
   item.position = point;
 };
 
-Dropmarker.prototype._toggleSelectedItem = function(item){
-  if(this.selectedItem && this.selectedItem.id != item.id)
-    this._deselectSelectedItem();
+Dropmarker.prototype._bindListeners = function(){
+  var self = this;
+  var selectTool = self.tools.select.tool;
 
-  if(item.fullySelected){
-    item.fullySelected = false;
-    this.selectedItem = null;
-  } else {
-    item.fullySelected = true;
-    this.selectedItem = item;
-  }
+  document.addEventListener("keydown", function(e){
+    if(self.selectMode && e.keyCode == 8){ // backspace
+      self.selectedItem.remove();
+      paper.view.update();
+    } else {
+      for(var tool in self.tools){
+        if( self.tools.hasOwnProperty(tool) &&
+            self.tools[tool].shortcut == e.keyCode) {
+          self.setTool(tool);
+        }
+      }
+    }
+  });
+
+  selectTool.onMouseDown = function(event){
+    // Deselect any items if we're clicking the background
+    if(event.item instanceof paper.Raster){
+      self._deselectSelectedItem();
+    }
+  };
 };
