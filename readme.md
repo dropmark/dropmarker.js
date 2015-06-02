@@ -17,6 +17,7 @@ Example:
 
 - `destroy`: Removes the canvas from the DOM and removes any event listeners
 - `exportCanvas(kind)`: Exports canvas as a string. Valid kinds are: `json`, `svg`, and `image` (base64, default).
+- `isEmpty`: Returns `true` if the user has drawn on the canvas, otherwise `false`.
 - `resetCanvas`: Clears the canvas to its blank state
 - `setTool(name)`: Changes the active tool. Valid names are: `arrow` (default), `brush`, `highlighter`, and `select`
 - `setColor(val)`: Sets the color for new paths. Can be any valid CSS color value.
