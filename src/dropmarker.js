@@ -2,10 +2,12 @@
 
 var Dropmarker = function(container, imageSrc){
   this._VERSION = '1.0.1';
+  this.backgroundLayer = null;
   this.canvas = null;
   this.color = "red";
   this.create = true; // disabled when we're editing an existing shape
   this.container = container;
+  this.drawingLayer = null;
   this.imageSrc = imageSrc;
   this.onSetTool = null;
   this.onKeydown = this._handleKeyDown.bind(this);
@@ -41,6 +43,14 @@ var Dropmarker = function(container, imageSrc){
   this._bindListeners();
 };
 
+Dropmarker.prototype.destroy = function(){
+  var self = this;
+  document.removeEventListener("keydown", self.onKeydown, false);
+  this.container.removeChild(this.canvas);
+  this.container.classList.remove('dropmarker-active');
+  this._resetCursor();
+};
+
 Dropmarker.prototype.exportCanvas = function(kind){
   var str;
   var self = this;
@@ -59,18 +69,13 @@ Dropmarker.prototype.exportCanvas = function(kind){
   return str;
 };
 
-Dropmarker.prototype.resetCanvas = function(){
-  paper.project.clear();
-  paper.view.update();
-  this._setBackground();
-};
+Dropmarker.prototype.isEmpty = function(){
+  return this.drawingLayer.isEmpty();
+},
 
-Dropmarker.prototype.destroy = function(){
-  var self = this;
-  document.removeEventListener("keydown", self.onKeydown, false);
-  this.container.removeChild(this.canvas);
-  this.container.classList.remove('dropmarker-active');
-  this._resetCursor();
+Dropmarker.prototype.resetCanvas = function(){
+  this.drawingLayer.clear();
+  paper.view.update();
 };
 
 Dropmarker.prototype.setTool = function(name){
@@ -107,18 +112,24 @@ Dropmarker.prototype._init = function(){
 
   // Create a Paper project
   paper.setup(this.canvas);
+  this.backgroundLayer = new paper.Layer();
+  this.drawingLayer = new paper.Layer();
+  this.drawingLayer.activate();
 
   this.container.classList.add("dropmarker-active");
 };
 
 Dropmarker.prototype._setBackground = function(){
   var image = new Image();
+  var self = this;
 
   image.onload = function(){
+    self.backgroundLayer.activate();
     paper.view.viewSize = new paper.Size(image.width, image.height);
     paper.view.update();
     new paper.Raster(image, new paper.Point(image.width / 2, image.height / 2));
     paper.view.draw();
+    self.drawingLayer.activate();
   };
 
   image.src = this.imageSrc;
