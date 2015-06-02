@@ -13058,12 +13058,15 @@ Dropmarker.prototype._init = function(){
 
 Dropmarker.prototype._setBackground = function(){
   var image = new Image();
-  image.src = this.imageSrc;
 
-  paper.view.viewSize = new paper.Size(image.width, image.height);
-  paper.view.update();
-  new paper.Raster(image, new paper.Point(image.width / 2, image.height / 2));
-  paper.view.draw();
+  image.onload = function(){
+    paper.view.viewSize = new paper.Size(image.width, image.height);
+    paper.view.update();
+    new paper.Raster(image, new paper.Point(image.width / 2, image.height / 2));
+    paper.view.draw();
+  };
+
+  image.src = this.imageSrc;
 };
 
 Dropmarker.prototype._resetBackground = function(){
