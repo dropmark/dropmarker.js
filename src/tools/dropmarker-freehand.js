@@ -54,7 +54,7 @@ DropmarkerFreehandPath.prototype.draw = function(event){
 DropmarkerFreehandPath.prototype.finalize = function(){
   var self = this;
 
-  self.path.simplify();
+  self.path.smooth();
 
   self.path.onMouseDown = function(event){
     if(!self.DR.selectMode) return;
