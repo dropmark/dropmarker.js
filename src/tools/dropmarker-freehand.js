@@ -38,12 +38,11 @@ var DropmarkerFreehandPath = function(dropmarker, kind) {
   this.path = new paper.Path();
   this.path.strokeColor = this.DR.color;
   this.path.strokeWidth = this.DR.pathSize;
+  this.path.strokeCap = 'round';
 
   if(this.kind == 'highlighter'){
     this.path.strokeColor.alpha = 0.8;
     this.path.blendMode = 'multiply';
-  } else {
-    this.path.strokeCap = 'round';
   }
 };
 
