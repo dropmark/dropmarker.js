@@ -1,6 +1,7 @@
 "use strict";
 
 var Dropmarker = function(container, image64){
+  this._VERSION = '1.0';
   this.canvas = null;
   this.color = "red";
   this.create = true; // disabled when we're editing an existing shape
