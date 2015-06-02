@@ -1,12 +1,14 @@
 "use strict";
 
-var Dropmarker = function(container, image64){
-  this._VERSION = '1.0';
+var Dropmarker = function(container, imageSrc){
+  this._VERSION = '1.0.1';
   this.canvas = null;
   this.color = "red";
   this.create = true; // disabled when we're editing an existing shape
   this.container = container;
-  this.image64 = image64;
+  this.imageSrc = imageSrc;
+  this.onSetTool = null;
+  this.onKeydown = this._handleKeyDown.bind(this);
   this.pathSize = 10;
   this.selectMode = false;
   this.selectedItem = null;
@@ -32,7 +34,7 @@ var Dropmarker = function(container, image64){
   // kick things off
   this._init();
 
-  if(this.image64)
+  if(this.imageSrc)
     this._setBackground();
 
   this.setTool("arrow");
@@ -63,6 +65,14 @@ Dropmarker.prototype.resetCanvas = function(){
   this._setBackground();
 };
 
+Dropmarker.prototype.destroy = function(){
+  var self = this;
+  document.removeEventListener("keydown", self.onKeydown, false);
+  this.container.removeChild(this.canvas);
+  this.container.classList.remove('dropmarker-active');
+  this._resetCursor();
+};
+
 Dropmarker.prototype.setTool = function(name){
   this.selectMode = (name == "select");
 
@@ -73,6 +83,8 @@ Dropmarker.prototype.setTool = function(name){
   this._deselectSelectedItem();
   paper.view.update();
   this.tools[name].tool.activate();
+
+  if(typeof this.onSetTool === 'function') this.onSetTool(name);
 };
 
 Dropmarker.prototype.setColor = function(val){
@@ -101,7 +113,7 @@ Dropmarker.prototype._init = function(){
 
 Dropmarker.prototype._setBackground = function(){
   var image = new Image();
-  image.src = this.image64;
+  image.src = this.imageSrc;
 
   paper.view.viewSize = new paper.Size(image.width, image.height);
   paper.view.update();
@@ -141,23 +153,24 @@ Dropmarker.prototype._moveItem = function(item, point){
   item.position = point;
 };
 
+Dropmarker.prototype._handleKeyDown = function(e){
+  if(this.selectMode && e.keyCode == 8){ // backspace
+    e.preventDefault();
+    this.selectedItem.remove();
+    paper.view.update();
+  } else {
+    for(var tool in this.tools){
+      if(this.tools.hasOwnProperty(tool) && this.tools[tool].shortcut == e.keyCode) {
+        this.setTool(tool);
+      }
+    }
+  }
+};
+
 Dropmarker.prototype._bindListeners = function(){
   var self = this;
   var selectTool = self.tools.select.tool;
-
-  document.addEventListener("keydown", function(e){
-    if(self.selectMode && e.keyCode == 8){ // backspace
-      self.selectedItem.remove();
-      paper.view.update();
-    } else {
-      for(var tool in self.tools){
-        if( self.tools.hasOwnProperty(tool) &&
-            self.tools[tool].shortcut == e.keyCode) {
-          self.setTool(tool);
-        }
-      }
-    }
-  });
+  document.addEventListener("keydown", self.onKeydown, false);
 
   selectTool.onMouseDown = function(event){
     // Deselect any items if we're clicking the background
