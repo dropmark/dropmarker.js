@@ -132,6 +132,8 @@ Dropmarker.prototype._setBackground = function(){
     self.drawingLayer.activate();
   };
 
+  // See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image
+  image.crossOrigin = 'anonymous';
   image.src = this.imageSrc;
 };
 
