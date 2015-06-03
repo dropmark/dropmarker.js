@@ -13009,7 +13009,7 @@ Dropmarker.prototype.exportCanvas = function(kind, onlyDrawing){
       break;
     case "svg":
       str = paper.project.exportSVG({
-        asString: false
+        asString: true
       });
       break;
     default:
