@@ -12946,6 +12946,7 @@ DropmarkerFreehandPath.prototype.updateCursor = function(){
 
 var Dropmarker = function(container, imageSrc){
   this._VERSION = '1.0.1';
+  this.backgroundImage = null;
   this.backgroundLayer = null;
   this.canvas = null;
   this.color = "red";
@@ -12981,7 +12982,7 @@ var Dropmarker = function(container, imageSrc){
   this._init();
 
   if(this.imageSrc)
-    this._setBackground();
+    this._loadBackground();
 
   this.setTool("arrow");
   this._bindListeners();
@@ -12995,19 +12996,28 @@ Dropmarker.prototype.destroy = function(){
   this._resetCursor();
 };
 
-Dropmarker.prototype.exportCanvas = function(kind){
+Dropmarker.prototype.exportCanvas = function(kind, onlyDrawing){
   var str;
-  var self = this;
+
+  if(onlyDrawing){
+    this.backgroundLayer.remove();
+  }
 
   switch(kind){
     case "json":
       str = paper.project.exportJSON();
       break;
     case "svg":
-      str = paper.project.exportSVG();
+      str = paper.project.exportSVG({
+        asString: false
+      });
       break;
     default:
-      str = self.canvas.toDataURL();
+      str = this.canvas.toDataURL();
+  }
+
+  if(onlyDrawing){
+    this.backgroundLayer.insertBelow(this.drawingLayer);
   }
 
   return str;
@@ -13063,27 +13073,26 @@ Dropmarker.prototype._init = function(){
   this.container.classList.add("dropmarker-active");
 };
 
-Dropmarker.prototype._setBackground = function(){
-  var image = new Image();
-  var self = this;
+Dropmarker.prototype._loadBackground = function(){
+  this.backgroundImage = new Image();
 
-  image.onload = function(){
-    self.backgroundLayer.activate();
-    paper.view.viewSize = new paper.Size(image.width, image.height);
-    paper.view.update();
-    new paper.Raster(image, new paper.Point(image.width / 2, image.height / 2));
-    paper.view.draw();
-    self.drawingLayer.activate();
-  };
+  this.backgroundImage.onload = function(){
+    this._setBackground();
+  }.bind(this);
 
   // See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image
-  image.crossOrigin = 'anonymous';
-  image.src = this.imageSrc;
+  this.backgroundImage.crossOrigin = 'anonymous';
+  this.backgroundImage.src = this.imageSrc;
 };
 
-Dropmarker.prototype._resetBackground = function(){
-  this.background.remove();
+Dropmarker.prototype._setBackground = function(){
+  var image = this.backgroundImage;
+  this.backgroundLayer.activate();
+  paper.view.viewSize = new paper.Size(image.width, image.height);
   paper.view.update();
+  new paper.Raster(image, new paper.Point(image.width / 2, image.height / 2));
+  paper.view.update();
+  this.drawingLayer.activate();
 };
 
 Dropmarker.prototype._setCursor = function(value){

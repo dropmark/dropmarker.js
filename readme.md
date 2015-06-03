@@ -16,7 +16,7 @@ Example:
 #### Methods:
 
 - `destroy`: Removes the canvas from the DOM and removes any event listeners
-- `exportCanvas(kind)`: Exports canvas as a string. Valid kinds are: `json`, `svg`, and `image` (base64, default).
+- `exportCanvas(kind, onlyDrawing)`: Exports canvas as a string. Valid kinds are: `json`, `svg`, and `image` (base64, default). Passing in `true` as the second parameter will exclude the background image from the export (only with JSON and SVG).
 - `isEmpty`: Returns `true` if the user has drawn on the canvas, otherwise `false`.
 - `resetCanvas`: Clears the canvas to its blank state
 - `setTool(name)`: Changes the active tool. Valid names are: `arrow` (default), `brush`, `highlighter`, and `select`
