@@ -49,9 +49,9 @@ Dropmarker.prototype.destroy = function(){
   document.removeEventListener("keydown", self.onKeydown, false);
 
   try{
-    this.container.removeChild(this.canvas);
-    this.container.classList.remove('dropmarker-active');
     this._resetCursor();
+    this.container.classList.remove('dropmarker-active');
+    this.container.removeChild(this.canvas);
   } catch (e) {
     // Elements probably don't exist anymore.
   }
