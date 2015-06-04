@@ -13123,15 +13123,17 @@ Dropmarker.prototype._moveItem = function(item, point){
 };
 
 Dropmarker.prototype._handleKeyDown = function(e){
+  var tag = e.target.tagName.toLowerCase();
+  if(tag == 'input' || tag == 'textarea') return;
+
   if(this.selectMode && e.keyCode == 8){ // backspace
     e.preventDefault();
     this.selectedItem.remove();
     paper.view.update();
   } else {
     for(var tool in this.tools){
-      if(this.tools.hasOwnProperty(tool) && this.tools[tool].shortcut == e.keyCode) {
+      if(this.tools.hasOwnProperty(tool) && this.tools[tool].shortcut == e.keyCode)
         this.setTool(tool);
-      }
     }
   }
 };
