@@ -47,9 +47,14 @@ var Dropmarker = function(container, imageSrc){
 Dropmarker.prototype.destroy = function(){
   var self = this;
   document.removeEventListener("keydown", self.onKeydown, false);
-  this.container.removeChild(this.canvas);
-  this.container.classList.remove('dropmarker-active');
-  this._resetCursor();
+
+  try{
+    this.container.removeChild(this.canvas);
+    this.container.classList.remove('dropmarker-active');
+    this._resetCursor();
+  } catch (e) {
+    // Elements probably don't exist anymore.
+  }
 };
 
 Dropmarker.prototype.exportCanvas = function(kind, onlyDrawing){
