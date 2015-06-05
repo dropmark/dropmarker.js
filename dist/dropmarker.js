@@ -13028,6 +13028,11 @@ Dropmarker.prototype.exportCanvas = function(kind, onlyDrawing){
   return str;
 };
 
+Dropmarker.prototype.importDrawing = function(svg){
+  this.drawingLayer.removeChildren();
+  this.drawingLayer.importSVG(svg);
+};
+
 Dropmarker.prototype.isEmpty = function(){
   return this.drawingLayer.isEmpty();
 },
