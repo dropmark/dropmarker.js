@@ -20,8 +20,9 @@ Example:
 - `importDrawing(svg)`: Imports an SVG element (or URL) into the drawing layer of the canvas
 - `isEmpty`: Returns `true` if the user has drawn on the canvas, otherwise `false`.
 - `resetCanvas`: Clears the canvas to its blank state
-- `setTool(name)`: Changes the active tool. Valid names are: `arrow` (default), `brush`, `highlighter`, and `select`
+- `setBackground(backgroundSrc)`: Changes the background
 - `setColor(val)`: Sets the color for new paths. Can be any valid CSS color value.
+- `setTool(name)`: Changes the active tool. Valid names are: `arrow` (default), `brush`, `highlighter`, and `select`
 
 ## Building
 

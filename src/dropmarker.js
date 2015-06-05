@@ -13,6 +13,7 @@ var Dropmarker = function(container, imageSrc, readOnly){
   this.onSetTool = null;
   this.onKeydown = this._handleKeyDown.bind(this);
   this.pathSize = 10;
+  this.pendingLoads = 0;
   this.readOnly = readOnly;
   this.selectMode = false;
   this.selectedItem = null;
@@ -89,10 +90,10 @@ Dropmarker.prototype.exportCanvas = function(kind, onlyDrawing){
 };
 
 Dropmarker.prototype.importDrawing = function(svg){
-  this.container.classList.add('dropmarker-loading');
+  this._loaderPush();
   this.drawingLayer.removeChildren();
   this.drawingLayer.importSVG(svg, function(){
-    this.container.classList.remove('dropmarker-loading');
+    this._loaderPop();
   }.bind(this));
 };
 
@@ -103,6 +104,23 @@ Dropmarker.prototype.isEmpty = function(){
 Dropmarker.prototype.resetCanvas = function(){
   this.drawingLayer.clear();
   paper.view.update();
+};
+
+Dropmarker.prototype.setBackground = function(src){
+  if(this.imageSrc != src){
+    this.backgroundLayer.removeChildren();
+    this.imageSrc = src;
+    this._loadBackground();
+  }
+};
+
+Dropmarker.prototype.setColor = function(val){
+  this.color = val;
+
+  if(this.selectMode && this.selectedItem){
+    this.selectedItem.strokeColor = val;
+    paper.view.update();
+  }
 };
 
 Dropmarker.prototype.setTool = function(name){
@@ -117,15 +135,6 @@ Dropmarker.prototype.setTool = function(name){
   this.tools[name].tool.activate();
 
   if(typeof this.onSetTool === 'function') this.onSetTool(name);
-};
-
-Dropmarker.prototype.setColor = function(val){
-  this.color = val;
-
-  if(this.selectMode && this.selectedItem){
-    this.selectedItem.strokeColor = val;
-    paper.view.update();
-  }
 };
 
 Dropmarker.prototype.setSize = function(val){
@@ -150,16 +159,32 @@ Dropmarker.prototype._init = function(){
 
 Dropmarker.prototype._loadBackground = function(){
   this.backgroundImage = new Image();
-  this.container.classList.add('dropmarker-loading');
+  this._loaderPush();
 
   this.backgroundImage.onload = function(){
-    this.container.classList.remove('dropmarker-loading');
+    this._loaderPop();
     this._setBackground();
   }.bind(this);
 
   // See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image
   this.backgroundImage.crossOrigin = 'anonymous';
   this.backgroundImage.src = this.imageSrc;
+};
+
+Dropmarker.prototype._loaderPush = function(){
+  this.pendingLoads++;
+
+  if(this.pendingLoads == 1){
+    this.container.classList.add('dropmarker-loading');
+  }
+};
+
+Dropmarker.prototype._loaderPop = function(){
+  this.pendingLoads--;
+
+  if(this.pendingLoads == 0){
+    this.container.classList.remove('dropmarker-loading');
+  }
 };
 
 Dropmarker.prototype._setBackground = function(){
