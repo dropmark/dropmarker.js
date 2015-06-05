@@ -12998,6 +12998,7 @@ Dropmarker.prototype.destroy = function(){
   try{
     this._resetCursor();
     this.container.classList.remove('dropmarker-active');
+    this.container.classList.remove('dropmarker-readonly');
     this.container.removeChild(this.canvas);
   } catch (e) {
     // Elements probably don't exist anymore.
