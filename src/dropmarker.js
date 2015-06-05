@@ -93,10 +93,14 @@ Dropmarker.prototype.importDrawing = function(svg){
   this._loaderPush();
   this.drawingLayer.removeChildren();
   paper.view.update();
-  this.drawingLayer.importSVG(svg, function(){
-    this._loaderPop();
-  }.bind(this));
+  this.drawingLayer.importSVG(svg, {
+    onLoad: this._importOnLoad.bind(this)
+  });
 };
+
+Dropmarker.prototype._importOnLoad = function(data){
+  this._loaderPop();
+}
 
 Dropmarker.prototype.isEmpty = function(){
   return this.drawingLayer.isEmpty();
