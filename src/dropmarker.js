@@ -1,6 +1,6 @@
 "use strict";
 
-var Dropmarker = function(container, imageSrc){
+var Dropmarker = function(container, imageSrc, readOnly){
   this._VERSION = '1.0.1';
   this.backgroundImage = null;
   this.backgroundLayer = null;
@@ -13,6 +13,7 @@ var Dropmarker = function(container, imageSrc){
   this.onSetTool = null;
   this.onKeydown = this._handleKeyDown.bind(this);
   this.pathSize = 10;
+  this.readOnly = readOnly;
   this.selectMode = false;
   this.selectedItem = null;
   this.tools = {
@@ -40,8 +41,10 @@ var Dropmarker = function(container, imageSrc){
   if(this.imageSrc)
     this._loadBackground();
 
-  this.setTool("arrow");
-  this._bindListeners();
+  if(!this.readOnly){
+    this.setTool("arrow");
+    this._bindListeners();
+  }
 };
 
 Dropmarker.prototype.destroy = function(){
@@ -135,8 +138,10 @@ Dropmarker.prototype._init = function(){
   this.backgroundLayer = new paper.Layer();
   this.drawingLayer = new paper.Layer();
   this.drawingLayer.activate();
-
   this.container.classList.add("dropmarker-active");
+
+  if(this.readOnly)
+    this.container.classList.add("dropmarker-readonly");
 };
 
 Dropmarker.prototype._loadBackground = function(){

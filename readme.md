@@ -4,7 +4,7 @@ Dropmarker.js adds very basic drawing capabilities in the browser. *See `demo.ht
 
 #### Getting started:
 
-`Dropmarker(htmlElement, backgroundSrc)`: Creates a new Dropmarker instance, which creates a `<canvas>` element within the HTML element you passthrough.
+`Dropmarker(htmlElement, backgroundSrc, readOnly)`: Creates a new Dropmarker instance, which creates a `<canvas>` element within the HTML element you passthrough.
 
 Example:
 
