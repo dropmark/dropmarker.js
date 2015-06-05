@@ -13036,6 +13036,7 @@ Dropmarker.prototype.exportCanvas = function(kind, onlyDrawing){
 Dropmarker.prototype.importDrawing = function(svg){
   this._loaderPush();
   this.drawingLayer.removeChildren();
+  paper.view.update();
   this.drawingLayer.importSVG(svg, function(){
     this._loaderPop();
   }.bind(this));
@@ -13053,6 +13054,7 @@ Dropmarker.prototype.resetCanvas = function(){
 Dropmarker.prototype.setBackground = function(src){
   if(this.imageSrc != src){
     this.backgroundLayer.removeChildren();
+    paper.view.update();
     this.imageSrc = src;
     this._loadBackground();
   }
