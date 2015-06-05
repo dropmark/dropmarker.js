@@ -89,8 +89,11 @@ Dropmarker.prototype.exportCanvas = function(kind, onlyDrawing){
 };
 
 Dropmarker.prototype.importDrawing = function(svg){
+  this.container.classList.add('dropmarker-loading');
   this.drawingLayer.removeChildren();
-  this.drawingLayer.importSVG(svg);
+  this.drawingLayer.importSVG(svg, function(){
+    this.container.classList.remove('dropmarker-loading');
+  }.bind(this));
 };
 
 Dropmarker.prototype.isEmpty = function(){
@@ -147,8 +150,10 @@ Dropmarker.prototype._init = function(){
 
 Dropmarker.prototype._loadBackground = function(){
   this.backgroundImage = new Image();
+  this.container.classList.add('dropmarker-loading');
 
   this.backgroundImage.onload = function(){
+    this.container.classList.remove('dropmarker-loading');
     this._setBackground();
   }.bind(this);
 
