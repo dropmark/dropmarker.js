@@ -12944,7 +12944,7 @@ DropmarkerFreehandPath.prototype.updateCursor = function(){
 }
 "use strict";
 
-var Dropmarker = function(container, imageSrc, readOnly){
+var Dropmarker = function(container, options){
   this._VERSION = '1.0.1';
   this.backgroundImage = null;
   this.backgroundLayer = null;
@@ -12953,12 +12953,11 @@ var Dropmarker = function(container, imageSrc, readOnly){
   this.create = true; // disabled when we're editing an existing shape
   this.container = container;
   this.drawingLayer = null;
-  this.imageSrc = imageSrc;
+  this.importedDrawing = null;
   this.onSetTool = null;
   this.onKeydown = this._handleKeyDown.bind(this);
   this.pathSize = 10;
   this.pendingLoads = 0;
-  this.readOnly = readOnly;
   this.selectMode = false;
   this.selectedItem = null;
   this.tools = {
@@ -12980,10 +12979,17 @@ var Dropmarker = function(container, imageSrc, readOnly){
     }
   };
 
+  if(typeof options == 'object'){
+    if(options.background) this.backgroundSrc = options.background;
+    if(options.readOnly) this.readOnly = options.readOnly;
+    if(options.width) this.width = options.width;
+    if(options.height) this.height = options.height;
+  }
+
   // kick things off
   this._init();
 
-  if(this.imageSrc)
+  if(this.backgroundSrc)
     this._loadBackground();
 
   if(!this.readOnly){
@@ -13034,13 +13040,30 @@ Dropmarker.prototype.exportCanvas = function(kind, onlyDrawing){
 };
 
 Dropmarker.prototype.importDrawing = function(svg){
+  this.importedDrawing = svg;
   this._loaderPush();
   this.drawingLayer.removeChildren();
-  paper.view.update();
-  this.drawingLayer.importSVG(svg, function(){
-    this._loaderPop();
-  }.bind(this));
+
+  this.drawingLayer.importSVG(this.importedDrawing, {
+    onLoad: this._importOnLoad.bind(this),
+    expandShapes: true
+  });
 };
+
+Dropmarker.prototype._importOnLoad = function(data){
+  this._loaderPop();
+  this._scaleDrawingLayer();
+}
+
+Dropmarker.prototype._scaleDrawingLayer = function(){
+  // If the SVG we import is larger than the canvas size, we need to scale it to fit within
+  // TODO: We could make this optional if imported SVGs don't need scaled
+  if(!this.drawingLayer.children.length) return;
+  var scale = paper.view.size.width / this.width;
+  var center = new paper.Point(0, 0);
+  this.drawingLayer.children[0].scale(scale, center);
+  paper.view.update();
+}
 
 Dropmarker.prototype.isEmpty = function(){
   return this.drawingLayer.isEmpty();
@@ -13052,10 +13075,10 @@ Dropmarker.prototype.resetCanvas = function(){
 };
 
 Dropmarker.prototype.setBackground = function(src){
-  if(this.imageSrc != src){
+  if(this.backgroundSrc != src){
     this.backgroundLayer.removeChildren();
     paper.view.update();
-    this.imageSrc = src;
+    this.backgroundSrc = src;
     this._loadBackground();
   }
 };
@@ -13088,6 +13111,11 @@ Dropmarker.prototype.setSize = function(val){
 };
 
 Dropmarker.prototype._init = function(){
+  if(this.readOnly){
+    // Fixes scaling imported SVG's on smaller canvases
+    paper.settings.applyMatrix = false;
+  }
+
   // Create canvas
   this.canvas = document.createElement("canvas");
   this.container.appendChild(this.canvas);
@@ -13114,7 +13142,7 @@ Dropmarker.prototype._loadBackground = function(){
 
   // See https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image
   this.backgroundImage.crossOrigin = 'anonymous';
-  this.backgroundImage.src = this.imageSrc;
+  this.backgroundImage.src = this.backgroundSrc;
 };
 
 Dropmarker.prototype._loaderPush = function(){
@@ -13139,8 +13167,10 @@ Dropmarker.prototype._setBackground = function(){
   paper.view.viewSize = new paper.Size(image.width, image.height);
   paper.view.update();
   new paper.Raster(image, new paper.Point(image.width / 2, image.height / 2));
-  paper.view.update();
   this.drawingLayer.activate();
+
+  if(this.importedDrawing)
+    this.importDrawing(this.importedDrawing);
 };
 
 Dropmarker.prototype._setCursor = function(value){

@@ -52,7 +52,9 @@
     <button onClick="DR.setColor('red')" style="background: red"></button>
     <button onClick="DR.setColor('#d775eb')" style="background: #d775eb"></button>
     <button onClick="DR.setColor('yellow')" style="background: yellow"></button>
-    <button onClick="DR.importDrawing('http://cdn-dev.dropmark.com/192/254b3a71c8563f6021b38d48258b4192f1315c08/annotation/12508-annotation-1433516997408.svg')">Import SVG file</button>
+    <button onClick="DR.importDrawing('http://cdn-dev.dropmark.com/192/30a5dc7d0641b10235ac213b43a7602b2dff79a3/annotation/12525-annotation-1433609681249.svg')">Import SVG file</button>
+    <button onClick="DR.setBackground('http://cdn-dev.dropmark.com/192/d13f433f8f3d7130da98dd24356455e299f22261/Case-studies-3-2-2015-SH-B_preview.jpg')">Small background</button>
+    <button onClick="DR.setBackground('http://cdn-dev.dropmark.com/192/d13f433f8f3d7130da98dd24356455e299f22261/Case-studies-3-2-2015-SH-B.jpg')">Original background</button>
     <input type="range" min="2" max="30" value="5" onChange="DR.setSize(this.value)">
   </div>
 
@@ -68,7 +70,11 @@
 
   <script>
     var wrap = document.querySelector('.canvas-wrap');
-    var DR = new Dropmarker(wrap, demoImage64);
+    var DR = new Dropmarker(wrap, {
+      background: 'http://cdn-dev.dropmark.com/192/d13f433f8f3d7130da98dd24356455e299f22261/Case-studies-3-2-2015-SH-B.jpg',
+      width: 1819,
+      height: 4075
+    });
 
     function exportCanvas(){
       var ex = DR.exportCanvas();

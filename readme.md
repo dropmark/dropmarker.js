@@ -31,3 +31,7 @@ npm install
 ```
 
 Then run `gulp` to bundle and minify.
+
+## TODO
+
+- [Zoom and pan](http://matthiasberth.com/articles/stable-zoom-and-pan-in-paperjs/)
