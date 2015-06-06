@@ -13057,8 +13057,8 @@ Dropmarker.prototype._importOnLoad = function(data){
 
 Dropmarker.prototype._scaleDrawingLayer = function(){
   // If the SVG we import is larger than the canvas size, we need to scale it to fit within
-  // TODO: We could make this optional if imported SVGs don't need scaled
-  if(!this.drawingLayer.children.length) return;
+  // TODO: We could make this optional if imported SVGs don't need scaled)
+  if(!this.drawingLayer.children.length || !this.height || !this.width) return;
   var scale = paper.view.size.width / this.width;
   var center = new paper.Point(0, 0);
   this.drawingLayer.children[0].scale(scale, center);
@@ -13168,6 +13168,7 @@ Dropmarker.prototype._setBackground = function(){
   paper.view.update();
   new paper.Raster(image, new paper.Point(image.width / 2, image.height / 2));
   this.drawingLayer.activate();
+  paper.view.update();
 
   if(this.importedDrawing)
     this.importDrawing(this.importedDrawing);
