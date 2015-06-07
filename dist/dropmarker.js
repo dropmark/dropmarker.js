@@ -12954,6 +12954,7 @@ var Dropmarker = function(container, options){
   this.container = container;
   this.drawingLayer = null;
   this.importedDrawing = null;
+  this.importedDrawingURL = null;
   this.onSetTool = null;
   this.onKeydown = this._handleKeyDown.bind(this);
   this.pathSize = 10;
@@ -13016,45 +13017,56 @@ Dropmarker.prototype.destroy = function(){
 Dropmarker.prototype.exportCanvas = function(kind, onlyDrawing){
   var str;
 
-  if(onlyDrawing){
+  if(onlyDrawing)
     this.backgroundLayer.remove();
-  }
 
   switch(kind){
     case "json":
       str = paper.project.exportJSON();
       break;
     case "svg":
-      str = paper.project.exportSVG({
-        asString: true
-      });
+      str = paper.project.exportSVG({ asString: true });
       break;
     default:
       str = this.canvas.toDataURL();
   }
 
-  if(onlyDrawing){
+  if(onlyDrawing)
     this.backgroundLayer.insertBelow(this.drawingLayer);
-  }
 
   return str;
 };
 
 Dropmarker.prototype.importDrawing = function(svg){
-  this.importedDrawing = svg;
-  this._loaderPush();
+  if(typeof svg == 'string'){
+    if(this.importedDrawingURL == svg && this.importedDrawing){
+      svg = this.importedDrawing;
+    } else {
+      this._loaderPush();
+      this.importedDrawingURL = svg;
+    }
+  }
+
   this.drawingLayer.removeChildren();
 
-  this.drawingLayer.importSVG(this.importedDrawing, {
+  this.drawingLayer.importSVG(svg, {
     onLoad: this._importOnLoad.bind(this),
+    onImport: this._importOnImport.bind(this),
     expandShapes: true
   });
+
+  this._scaleDrawingLayer();
 };
 
-Dropmarker.prototype._importOnLoad = function(data){
-  this._loaderPop();
+Dropmarker.prototype._importOnLoad = function(){
   this._scaleDrawingLayer();
-}
+  this._loaderPop();
+};
+
+Dropmarker.prototype._importOnImport = function(data){
+  if(data.nodeName.toLowerCase() === '#document') // Cache imported SVG:
+    this.importedDrawing = data;
+};
 
 Dropmarker.prototype._scaleDrawingLayer = function(){
   // If the SVG we import is larger than the canvas size, we need to scale it to fit within
