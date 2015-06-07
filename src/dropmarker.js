@@ -40,6 +40,7 @@ var Dropmarker = function(container, options){
     if(options.readOnly) this.readOnly = options.readOnly;
     if(options.width) this.width = options.width;
     if(options.height) this.height = options.height;
+    if(options.onReady) this.onReady = options.onReady;
   }
 
   // kick things off
@@ -226,8 +227,8 @@ Dropmarker.prototype._setBackground = function(){
   this.drawingLayer.activate();
   paper.view.update();
 
-  if(this.importedDrawing)
-    this.importDrawing(this.importedDrawing);
+  if(this.onReady)
+    this.onReady();
 };
 
 Dropmarker.prototype._setCursor = function(value){

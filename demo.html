@@ -49,6 +49,8 @@
     <button onClick="DR.setTool('highlighter')">Highlighter</button>
     <button onClick="exportCanvas()">Export</button>
     <button onClick="DR.resetCanvas()">Reset</button>
+    <button onClick="init()">Init</button>
+    <button onClick="DR.destroy()">Destroy</button>
     <button onClick="DR.setColor('red')" style="background: red"></button>
     <button onClick="DR.setColor('#d775eb')" style="background: #d775eb"></button>
     <button onClick="DR.setColor('yellow')" style="background: yellow"></button>
@@ -70,12 +72,20 @@
 
   <script>
     var wrap = document.querySelector('.canvas-wrap');
-    var DR = new Dropmarker(wrap, {
-      background: 'http://cdn-dev.dropmark.com/192/d13f433f8f3d7130da98dd24356455e299f22261/Case-studies-3-2-2015-SH-B.jpg',
-      width: 1819,
-      height: 4075,
-      readOnly: true
-    });
+    var DR;
+
+    init();
+
+    function init(){
+      DR = new Dropmarker(wrap, {
+        background: 'http://cdn-dev.dropmark.com/192/d13f433f8f3d7130da98dd24356455e299f22261/Case-studies-3-2-2015-SH-B.jpg',
+        width: 1819,
+        height: 4075,
+        onReady: function(dropmarker){
+          console.log('Ready.');
+        }
+      });
+    }
 
     function exportCanvas(){
       var ex = DR.exportCanvas();
