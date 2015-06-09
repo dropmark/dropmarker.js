@@ -50,7 +50,9 @@ var Dropmarker = function(container, options){
   if(this.backgroundSrc)
     this._loadBackground();
 
-  if(!this.readOnly){
+  if(this.readOnly){
+    this.setTool("select");
+  } else {
     this.setTool("arrow");
     this._bindListeners();
   }
